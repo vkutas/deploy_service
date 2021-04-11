@@ -1,6 +1,8 @@
 # coding=utf-8
 import os
 import sys
+import json
+import re
 import logging
 import logging.config
 import logging.handlers
@@ -146,6 +148,47 @@ def MainHandler():
         result, status = deploy_new_container(image_name, container_name, ports)
         return jsonify(result), status
 
+@app.route('/docker_hub', methods=['POST'])
+def accept_docker_hub_webhook():
+    try:
+        json.loads(request.json)
+    except ValueError as error:
+        log.error(f'{error}\n Ivalid JSON in request body: \n {request.json}')
+        return
+    
+    if len(request.json.get('images')) > 1:
+        log.error(f'Only one container expected')
+        return
+
+    tag = request.json.get('push_data').get('tag')
+    if tag == "release":
+        update_container(get_image_full_name, request.json.get('repository').get('name'))
+    
+    return
+    
+def get_image_full_name(payload: str):
+    return payload.get('repo_name') + '/' + payload.get('images')[0]
+
+def validate_request(callback_url: str):
+    return ''
+
+def update_container(image_name: str, container_name: str):
+    docker_client.images.pull(image_name)
+    kill_container(container_name)
+    docker_client.containers.run(image=image_name, name=container_name, detach=True, ports='8080:8080')
+    return ''
+
+def kill_container(container_name: str) -> bool:
+    try:
+        container = docker_client.containers.get(container_name)
+        container.kill()
+    except Exception as e:
+        log.warning(f'Error while delete container {container_name}, {e}')
+    finally:
+        # Удаление остановленых контейнеров, чтобы избежать конфликта имен
+        log.debug(docker_client.containers.prune())
+    log.info(f'Container deleted. container_name = {container_name}')
+    return True
 
 def main():
     init_logging()
