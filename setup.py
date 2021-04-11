@@ -14,5 +14,5 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'ci_example = deploy_service.app:main']},
+            'deploy-service = deploy_service.app:main']},
 )
