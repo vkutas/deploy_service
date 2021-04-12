@@ -2,20 +2,21 @@
 import os
 import sys
 import json
-import re
 import logging
 import logging.config
 import logging.handlers
 
 from flask import Flask
 from flask import request, jsonify
+from flask_api import status
 import docker
+import requests
 
 
 log = logging.getLogger(__name__)
 app = Flask(__name__)
 docker_client = docker.from_env()
-MY_AUTH_TOKEN = os.getenv('CI_TOKEN', None)  # Берем наш токен из переменной окружения
+AUTH_TOKEN = os.getenv('CI_TOKEN', None)  # Берем наш токен из переменной окружения
 
 
 def init_logging():
@@ -45,157 +46,58 @@ def init_logging():
         'loggers': loggers
     }
     logging.config.dictConfig(log_config)
+    
+@app.route('/deploy', methods=['POST'])
+def webhook_handler():
+    if check_token(request.headers.get('Authorization')):
+        if validate_request_format(request):
+            log.debug("Update image")
+            is_succes = update_container(request.get_json['owner'], request.get_json['repository'], request.get_json['tag'])
+            if is_succes:
+                return jsonify("{'status': success}"), 200
+            else:
+                return jsonify("{'status': fail}"), 200
+        else:
+            return 'Wrong request', status.HTTP_400_BAD_REQUEST
+    else:
+        return 'Authorization required', status.HTTP_401_UNAUTHORIZED
 
+def check_token(token: str) -> bool:
+    if token == AUTH_TOKEN:
+        return True
+    return False
 
-def get_active_containers():
-    """
-    Получение списка запущенных контейнеров
-    :return:
-    """
-    containers = docker_client.containers.list()
-    result = []
-    for container in containers:
-        result.append({
-            'short_id': container.short_id,
-            'container_name': container.name,
-            'image_name': container.image.tags,
-            'created':  container.attrs['Created'],
-            'status':  container.status,
-            'ports':  container.ports,
-        })
-    return result
+def validate_request_format(request: request):
+    True
 
-
-def get_container_name(item: dict) -> [str, str]:
-    """
-    Получение имени image из POST запроса
-    :param item:
-    :return:
-    """
-    if not isinstance(item, dict):
-        return ''
-    owner = item.get('owner')
-    repository = item.get('repository')
-    tag = item.get('tag', 'latest').replace('v', '')
-    if owner and repository and tag:
-        return f'{owner}/{repository}:{tag}', repository
-    if repository and tag:
-        return f'{repository}:{tag}', repository
-    return '', ''
-
-
-def kill_old_container(container_name: str) -> bool:
-    """
-    Перед запуском нового контейнера, удаляем старый
-    :param container_name:
-    :return:
-    """
+def update_container(owner: str, repository_name: str, tag: str) -> bool:
+    image_name = owner + '/' + repository_name
     try:
-        # Получение получение контейнера
-        container = docker_client.containers.get(container_name)
-        # Остановка
-        container.kill()
-    except Exception as e:
-        # На случай если такого контейнера небыло
-        log.warning(f'Error while delete container {container_name}, {e}')
-        return False
-    finally:
-        # Удаление остановленых контейнеров, чтобы избежать конфликта имен
-        log.debug(docker_client.containers.prune())
-    log.info(f'Container deleted. container_name = {container_name}')
-    return True
-
-
-def deploy_new_container(image_name: str, container_name: str, ports: dict = None):
-    try:
-        # Пул последнего image из docker hub'a
-        log.info(f'pull {image_name}, name={container_name}')
-        docker_client.images.pull(image_name)
-        log.debug('Success')
-        kill_old_container(container_name)
-        log.debug('Old killed')
-        # Запуск нового контейнера
-        docker_client.containers.run(image=image_name, name=container_name, detach=True, ports=ports)
-    except Exception as e:
-        log.error(f'Error while deploy container {container_name}, \n{e}')
-        return {'status': False, 'error': str(e)}, 400
-    log.info(f'Container deployed. container_name = {container_name}')
-    return {'status': True}, 200
-
-
-@app.route('/', methods=['GET', 'POST'])
-def MainHandler():
-    """
-    GET - Получение списка всех активных контейнеров
-    POST - деплой сборки контейнера
-    Пример тела запроса:
-    {
-        "owner": "gonfff",
-        "repository": "ci_example",
-        "tag": "v0.0.1",
-         "ports": {"8080": 8080}
-    }
-    :return:
-    """
-    if request.headers.get('Authorization') != MY_AUTH_TOKEN:
-        return jsonify({'message': 'Bad token'}), 401
-    if request.method == 'GET':
-        return jsonify(get_active_containers())
-    elif request.method == 'POST':
-        log.debug(f'Recieved {request.data}')
-        image_name, container_name = get_container_name(request.json)
-        ports = request.json.get('ports') if request.json.get('ports') else None
-        result, status = deploy_new_container(image_name, container_name, ports)
-        return jsonify(result), status
-
-@app.route('/docker_hub', methods=['POST'])
-def accept_docker_hub_webhook():
-    try:
-        json.loads(request.json)
-    except ValueError as error:
-        log.error(f'{error}\n Ivalid JSON in request body: \n {request.json}')
+        docker_client.images.pull(repository=image_name, tag = tag)
+    except docker.errors.APIError as api_error:
+        log.error(f'Error while pulling the image.\n{api_error}')
         return
     
-    if len(request.json.get('images')) > 1:
-        log.error(f'Only one container expected')
-        return
-
-    tag = request.json.get('push_data').get('tag')
-    if tag == "release":
-        update_container(get_image_full_name, request.json.get('repository').get('name'))
-    
-    return
-    
-def get_image_full_name(payload: str):
-    return payload.get('repo_name') + '/' + payload.get('images')[0]
-
-def validate_request(callback_url: str):
-    return ''
-
-def update_container(image_name: str, container_name: str):
-    docker_client.images.pull(image_name)
-    kill_container(container_name)
-    docker_client.containers.run(image=image_name, name=container_name, detach=True, ports='8080:8080')
-    return ''
-
-def kill_container(container_name: str) -> bool:
     try:
-        container = docker_client.containers.get(container_name)
-        container.kill()
-    except Exception as e:
-        log.warning(f'Error while delete container {container_name}, {e}')
-    finally:
-        # Удаление остановленых контейнеров, чтобы избежать конфликта имен
-        log.debug(docker_client.containers.prune())
-    log.info(f'Container deleted. container_name = {container_name}')
-    return True
+        running_instance=docker_client.containers.get(repository_name)
+    except docker.errors.NotFound:
+        log.info(f"A container '{repository_name} are not running.'")
+    
+    if running_instance is not None: 
+        running_instance.kill
+        
+    new_instance = docker_client.containers.run(image=image_name + ':' + tag, name=repository_name, detach=True, ports = {'8080': 8080})
+
+    if new_instance is not None:
+        return True
+
 
 def main():
     init_logging()
-    if not MY_AUTH_TOKEN:
+    if not AUTH_TOKEN:
         log.error('There is no auth token in env')
         sys.exit(1)
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5074)
 
 
 if __name__ == '__main__':
