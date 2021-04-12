@@ -71,21 +71,27 @@ def validate_request_format(request: request):
     return True
 
 def update_container(owner: str, repository_name: str, tag: str) -> bool:
+    log.info(f'Starting container update...\nRepository: {owner}\nApplication: {repository_name}\nTag: {tag}')
     image_name = owner + '/' + repository_name
     try:
+        log.info(f'Pulling image {image_name}')
         docker_client.images.pull(repository=image_name, tag = tag)
     except docker.errors.APIError as api_error:
         log.error(f'Error while pulling the image.\n{api_error}')
         return False
     
     try:
-        running_instance=docker_client.containers.get(repository_name)
+        log.info('Checking application container current status')
+        running_instance = docker_client.containers.get(repository_name)
     except docker.errors.NotFound:
         log.info(f"A container '{repository_name} are not running.'")
     
-    if running_instance is not None: 
+    if running_instance is not None:
+        log.info('Application container is running. Trying to kill...') 
         running_instance.kill
-        
+        log.info('Application container killed.')
+
+    log.info('Runing new instance...')
     new_instance = docker_client.containers.run(image=image_name + ':' + tag, name=repository_name, detach=True, ports = {'8080': 8080})
 
     if new_instance is not None:
