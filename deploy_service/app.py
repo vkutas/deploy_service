@@ -81,8 +81,9 @@ def update_container(owner: str, repository_name: str, tag: str) -> bool:
         return False
     
     try:
-        log.info('Checking application container current status')
+        log.info(f"Checking '{repository_name}' container current status")
         running_instance = docker_client.containers.get(repository_name)
+        log.info(f"Running '{repository_name}' container is found.\n{running_instance}")
     except docker.errors.NotFound:
         log.info(f"A container '{repository_name} are not running.'")
         running_instance = None
