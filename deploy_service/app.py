@@ -55,7 +55,7 @@ def webhook_handler():
             if is_succes:
                 return jsonify("{'status': success}"), 200
             else:
-                return jsonify("{'status': fail}"), 200
+                return jsonify("{'status': fail}"), 520
         else:
             return 'Wrong request', 400
     else:
@@ -74,7 +74,7 @@ def update_container(owner: str, repository_name: str, tag: str) -> bool:
     log.info(f'Starting container update...\nRepository: {owner}\nApplication: {repository_name}\nTag: {tag}')
     image_name = owner + '/' + repository_name
     try:
-        log.info(f'Pulling image {image_name}')
+        log.info(f'Pulling image {image_name}:{tag}')
         docker_client.images.pull(repository=image_name, tag = tag)
     except docker.errors.APIError as api_error:
         log.error(f'Error while pulling the image.\n{api_error}')
