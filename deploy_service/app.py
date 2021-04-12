@@ -66,8 +66,9 @@ def check_token(token: str) -> bool:
         return True
     return False
 
+# TODO
 def validate_request_format(request: request):
-    True
+    return True
 
 def update_container(owner: str, repository_name: str, tag: str) -> bool:
     image_name = owner + '/' + repository_name
