@@ -91,10 +91,13 @@ def update_container(owner: str, repository_name: str, tag: str) -> bool:
         log.info('Application container is running. Trying to kill...') 
         running_instance.kill
         log.info('Application container killed.')
+        log.info(f'Running containers:\n{docker_client.containers.list()}/n')
+        
 
     log.info('Removing all stoped containers...')
     docker_client.containers.prune()
     log.info('Success')
+    log.info(f'Container:\n{docker_client.containers.list(all=True)}/n')
 
     log.info('Runing new instance...')
     new_instance = docker_client.containers.run(image=image_name + ':' + tag, name=repository_name, detach=True, ports = {'8080': 8080})
