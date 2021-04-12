@@ -51,7 +51,7 @@ def webhook_handler():
     if check_token(request.headers.get('Authorization')):
         if validate_request_format(request):
             log.debug("Update image")
-            is_succes = update_container(request.get_json['owner'], request.get_json['repository'], request.get_json['tag'])
+            is_succes = update_container(request.get_json()['owner'], request.get_json()['repository'], request.get_json()['tag'])
             if is_succes:
                 return jsonify("{'status': success}"), 200
             else:
@@ -76,7 +76,7 @@ def update_container(owner: str, repository_name: str, tag: str) -> bool:
         docker_client.images.pull(repository=image_name, tag = tag)
     except docker.errors.APIError as api_error:
         log.error(f'Error while pulling the image.\n{api_error}')
-        return
+        return False
     
     try:
         running_instance=docker_client.containers.get(repository_name)
