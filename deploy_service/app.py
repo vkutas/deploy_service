@@ -90,7 +90,7 @@ def update_container(owner: str, repository_name: str, tag: str) -> bool:
     
     if running_instance is not None:
         log.info('Application container is running. Trying to kill...') 
-        running_instance.kill
+        running_instance.stop()
         log.info('Application container killed.')
         log.info(f'Running containers:\n{docker_client.containers.list()}\n')
         

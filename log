@@ -1,4 +1,4 @@
--- Logs begin at Sat 2021-04-10 11:42:54 UTC, end at Mon 2021-04-12 23:40:11 UTC. --
+-- Logs begin at Sat 2021-04-10 11:42:54 UTC, end at Mon 2021-04-12 23:55:21 UTC. --
 Apr 11 12:37:33 ubuntu-ci-lab systemd[1]: Started Deployment web server.
 Apr 11 12:37:34 ubuntu-ci-lab deploy-service[25277]:  * Serving Flask app "deploy_service.app" (lazy loading)
 Apr 11 12:37:34 ubuntu-ci-lab deploy-service[25277]:  * Environment: production
@@ -412,3 +412,90 @@ Apr 12 23:36:44 ubuntu-ci-lab deploy-service[31805]:   File "/usr/local/lib/pyth
 Apr 12 23:36:44 ubuntu-ci-lab deploy-service[31805]:     raise cls(e, response=response, explanation=explanation)
 Apr 12 23:36:44 ubuntu-ci-lab deploy-service[31805]: docker.errors.APIError: 409 Client Error for http+docker://localhost/v1.41/containers/create?name=emojiservice: Conflict ("Conflict. The container name "/emojiservice" is already in use by container "129f71da5142dfe250470b3f1d2a6a60b3e2d23b1910bb78d670dabcf332517c". You have to remove (or rename) that container to be able to reuse that name.")
 Apr 12 23:36:44 ubuntu-ci-lab deploy-service[31805]: [2021-04-12 23:36:44,558] [ CI/CD server ] [INFO]:werkzeug:13.92.177.61 - - [12/Apr/2021 23:36:44] "POST /deploy HTTP/1.1" 500 -
+Apr 12 23:45:46 ubuntu-ci-lab deploy-service[31805]: [2021-04-12 23:45:46,928] [ CI/CD server ] [INFO]:deploy_service.app:Starting container update...
+Apr 12 23:45:46 ubuntu-ci-lab deploy-service[31805]: Repository: vkutas
+Apr 12 23:45:46 ubuntu-ci-lab deploy-service[31805]: Application: emojiservice
+Apr 12 23:45:46 ubuntu-ci-lab deploy-service[31805]: Tag: 0.1.13-release
+Apr 12 23:45:46 ubuntu-ci-lab deploy-service[31805]: [2021-04-12 23:45:46,929] [ CI/CD server ] [INFO]:deploy_service.app:Pulling image vkutas/emojiservice:0.1.13-release
+Apr 12 23:45:51 ubuntu-ci-lab deploy-service[31805]: [2021-04-12 23:45:51,495] [ CI/CD server ] [INFO]:deploy_service.app:Checking application container current status
+Apr 12 23:45:51 ubuntu-ci-lab deploy-service[31805]: [2021-04-12 23:45:51,498] [ CI/CD server ] [INFO]:deploy_service.app:Application container is running. Trying to kill...
+Apr 12 23:45:51 ubuntu-ci-lab deploy-service[31805]: [2021-04-12 23:45:51,498] [ CI/CD server ] [INFO]:deploy_service.app:Application container killed.
+Apr 12 23:45:51 ubuntu-ci-lab deploy-service[31805]: [2021-04-12 23:45:51,500] [ CI/CD server ] [INFO]:deploy_service.app:Running containers:
+Apr 12 23:45:51 ubuntu-ci-lab deploy-service[31805]: []
+Apr 12 23:45:51 ubuntu-ci-lab deploy-service[31805]: [2021-04-12 23:45:51,501] [ CI/CD server ] [INFO]:deploy_service.app:Removing all stoped containers...
+Apr 12 23:45:51 ubuntu-ci-lab deploy-service[31805]: [2021-04-12 23:45:51,514] [ CI/CD server ] [INFO]:deploy_service.app:Success
+Apr 12 23:45:51 ubuntu-ci-lab deploy-service[31805]: [2021-04-12 23:45:51,526] [ CI/CD server ] [INFO]:deploy_service.app:Container:
+Apr 12 23:45:51 ubuntu-ci-lab deploy-service[31805]: []
+Apr 12 23:45:51 ubuntu-ci-lab deploy-service[31805]: [2021-04-12 23:45:51,527] [ CI/CD server ] [INFO]:deploy_service.app:Runing new instance...
+Apr 12 23:45:52 ubuntu-ci-lab deploy-service[31805]: [2021-04-12 23:45:52,326] [ CI/CD server ] [INFO]:deploy_service.app:New instance is up and running.
+Apr 12 23:45:52 ubuntu-ci-lab deploy-service[31805]: [2021-04-12 23:45:52,328] [ CI/CD server ] [INFO]:werkzeug:104.209.194.233 - - [12/Apr/2021 23:45:52] "POST /deploy HTTP/1.1" 200 -
+Apr 12 23:49:17 ubuntu-ci-lab systemd[1]: Stopping Deployment web server...
+Apr 12 23:49:17 ubuntu-ci-lab systemd[1]: deploy_service.service: Succeeded.
+Apr 12 23:49:17 ubuntu-ci-lab systemd[1]: Stopped Deployment web server.
+Apr 12 23:49:17 ubuntu-ci-lab systemd[1]: Started Deployment web server.
+Apr 12 23:49:18 ubuntu-ci-lab deploy-service[32531]:  * Serving Flask app "deploy_service.app" (lazy loading)
+Apr 12 23:49:18 ubuntu-ci-lab deploy-service[32531]:  * Environment: production
+Apr 12 23:49:18 ubuntu-ci-lab deploy-service[32531]:    WARNING: This is a development server. Do not use it in a production deployment.
+Apr 12 23:49:18 ubuntu-ci-lab deploy-service[32531]:    Use a production WSGI server instead.
+Apr 12 23:49:18 ubuntu-ci-lab deploy-service[32531]:  * Debug mode: off
+Apr 12 23:49:18 ubuntu-ci-lab deploy-service[32531]: [2021-04-12 23:49:18,514] [ CI/CD server ] [WARNING]:werkzeug: * Running on all addresses.
+Apr 12 23:49:18 ubuntu-ci-lab deploy-service[32531]:    WARNING: This is a development server. Do not use it in a production deployment.
+Apr 12 23:49:18 ubuntu-ci-lab deploy-service[32531]: [2021-04-12 23:49:18,516] [ CI/CD server ] [INFO]:werkzeug: * Running on http://104.248.255.173:5074/ (Press CTRL+C to quit)
+Apr 12 23:50:43 ubuntu-ci-lab deploy-service[32531]: [2021-04-12 23:50:43,753] [ CI/CD server ] [INFO]:deploy_service.app:Starting container update...
+Apr 12 23:50:43 ubuntu-ci-lab deploy-service[32531]: Repository: vkutas
+Apr 12 23:50:43 ubuntu-ci-lab deploy-service[32531]: Application: emojiservice
+Apr 12 23:50:43 ubuntu-ci-lab deploy-service[32531]: Tag: 0.1.13-release
+Apr 12 23:50:43 ubuntu-ci-lab deploy-service[32531]: [2021-04-12 23:50:43,754] [ CI/CD server ] [INFO]:deploy_service.app:Pulling image vkutas/emojiservice:0.1.13-release
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]: [2021-04-12 23:50:48,069] [ CI/CD server ] [INFO]:deploy_service.app:Checking 'emojiservice' container current status
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]: [2021-04-12 23:50:48,073] [ CI/CD server ] [INFO]:deploy_service.app:Running 'emojiservice' container is found.
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]: <Container: c86dff6cc2>
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]: [2021-04-12 23:50:48,073] [ CI/CD server ] [INFO]:deploy_service.app:Application container is running. Trying to kill...
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]: [2021-04-12 23:50:48,074] [ CI/CD server ] [INFO]:deploy_service.app:Application container killed.
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]: [2021-04-12 23:50:48,082] [ CI/CD server ] [INFO]:deploy_service.app:Running containers:
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]: [<Container: c86dff6cc2>]
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]: [2021-04-12 23:50:48,082] [ CI/CD server ] [INFO]:deploy_service.app:Removing all stoped containers...
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]: [2021-04-12 23:50:48,085] [ CI/CD server ] [INFO]:deploy_service.app:Success
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]: [2021-04-12 23:50:48,092] [ CI/CD server ] [INFO]:deploy_service.app:Container:
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]: [<Container: c86dff6cc2>]
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]: [2021-04-12 23:50:48,093] [ CI/CD server ] [INFO]:deploy_service.app:Runing new instance...
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]: [2021-04-12 23:50:48,099] [ CI/CD server ] [ERROR]:deploy_service.app:Exception on /deploy [POST]
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]: Traceback (most recent call last):
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:   File "/usr/local/lib/python3.8/dist-packages/docker-5.0.0-py3.8.egg/docker/api/client.py", line 268, in _raise_for_status
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:     response.raise_for_status()
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:   File "/usr/lib/python3/dist-packages/requests/models.py", line 940, in raise_for_status
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:     raise HTTPError(http_error_msg, response=self)
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]: requests.exceptions.HTTPError: 409 Client Error: Conflict for url: http+docker://localhost/v1.41/containers/create?name=emojiservice
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]: During handling of the above exception, another exception occurred:
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]: Traceback (most recent call last):
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:   File "/usr/local/lib/python3.8/dist-packages/Flask-1.1.2-py3.8.egg/flask/app.py", line 2447, in wsgi_app
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:     response = self.full_dispatch_request()
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:   File "/usr/local/lib/python3.8/dist-packages/Flask-1.1.2-py3.8.egg/flask/app.py", line 1952, in full_dispatch_request
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:     rv = self.handle_user_exception(e)
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:   File "/usr/local/lib/python3.8/dist-packages/Flask-1.1.2-py3.8.egg/flask/app.py", line 1821, in handle_user_exception
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:     reraise(exc_type, exc_value, tb)
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:   File "/usr/local/lib/python3.8/dist-packages/Flask-1.1.2-py3.8.egg/flask/_compat.py", line 39, in reraise
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:     raise value
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:   File "/usr/local/lib/python3.8/dist-packages/Flask-1.1.2-py3.8.egg/flask/app.py", line 1950, in full_dispatch_request
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:     rv = self.dispatch_request()
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:   File "/usr/local/lib/python3.8/dist-packages/Flask-1.1.2-py3.8.egg/flask/app.py", line 1936, in dispatch_request
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:     return self.view_functions[rule.endpoint](**req.view_args)
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:   File "/usr/local/lib/python3.8/dist-packages/deploy_service-0.0.1-py3.8.egg/deploy_service/app.py", line 54, in webhook_handler
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:     is_succes = update_container(request.get_json()['owner'], request.get_json()['repository'], request.get_json()['tag'])
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:   File "/usr/local/lib/python3.8/dist-packages/deploy_service-0.0.1-py3.8.egg/deploy_service/app.py", line 104, in update_container
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:     new_instance = docker_client.containers.run(image=image_name + ':' + tag, name=repository_name, detach=True, ports = {'8080': 8080})
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:   File "/usr/local/lib/python3.8/dist-packages/docker-5.0.0-py3.8.egg/docker/models/containers.py", line 811, in run
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:     container = self.create(image=image, command=command,
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:   File "/usr/local/lib/python3.8/dist-packages/docker-5.0.0-py3.8.egg/docker/models/containers.py", line 870, in create
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:     resp = self.client.api.create_container(**create_kwargs)
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:   File "/usr/local/lib/python3.8/dist-packages/docker-5.0.0-py3.8.egg/docker/api/container.py", line 430, in create_container
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:     return self.create_container_from_config(config, name)
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:   File "/usr/local/lib/python3.8/dist-packages/docker-5.0.0-py3.8.egg/docker/api/container.py", line 441, in create_container_from_config
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:     return self._result(res, True)
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:   File "/usr/local/lib/python3.8/dist-packages/docker-5.0.0-py3.8.egg/docker/api/client.py", line 274, in _result
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:     self._raise_for_status(response)
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:   File "/usr/local/lib/python3.8/dist-packages/docker-5.0.0-py3.8.egg/docker/api/client.py", line 270, in _raise_for_status
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:     raise create_api_error_from_http_exception(e)
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:   File "/usr/local/lib/python3.8/dist-packages/docker-5.0.0-py3.8.egg/docker/errors.py", line 31, in create_api_error_from_http_exception
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]:     raise cls(e, response=response, explanation=explanation)
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]: docker.errors.APIError: 409 Client Error for http+docker://localhost/v1.41/containers/create?name=emojiservice: Conflict ("Conflict. The container name "/emojiservice" is already in use by container "c86dff6cc28eca6970fb9a57afb6e132543040a083a588090fab59ab37f34e12". You have to remove (or rename) that container to be able to reuse that name.")
+Apr 12 23:50:48 ubuntu-ci-lab deploy-service[32531]: [2021-04-12 23:50:48,112] [ CI/CD server ] [INFO]:werkzeug:13.89.234.34 - - [12/Apr/2021 23:50:48] "POST /deploy HTTP/1.1" 500 -
