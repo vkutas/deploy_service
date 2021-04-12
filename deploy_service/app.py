@@ -8,7 +8,6 @@ import logging.handlers
 
 from flask import Flask
 from flask import request, jsonify
-from flask_api import status
 import docker
 import requests
 
@@ -58,9 +57,9 @@ def webhook_handler():
             else:
                 return jsonify("{'status': fail}"), 200
         else:
-            return 'Wrong request', status.HTTP_400_BAD_REQUEST
+            return 'Wrong request', 400
     else:
-        return 'Authorization required', status.HTTP_401_UNAUTHORIZED
+        return 'Authorization required', 401
 
 def check_token(token: str) -> bool:
     if token == AUTH_TOKEN:
