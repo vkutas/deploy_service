@@ -51,7 +51,7 @@ def webhook_handler():
     if check_token(request.headers.get('Authorization')):
         if validate_request_format(request):
             log.debug("Update image")
-            is_succes = update_container(request.get_json()['owner'], request.get_json()['repository'], request.get_json()['tag'])
+            is_succes = update_container(request.get_json()['owner'], request.get_json()['repository'], request.get_json()['tag'], request.get_json()['ports'])
             if is_succes:
                 return jsonify("{'status': success}"), 200
             else:
@@ -70,7 +70,7 @@ def check_token(token: str) -> bool:
 def validate_request_format(request: request):
     return True
 
-def update_container(owner: str, repository_name: str, tag: str) -> bool:
+def update_container(owner: str, repository_name: str, tag: str, ports: dict = None ) -> bool:
     log.info(f'Starting container update...\nRepository: {owner}\nApplication: {repository_name}\nTag: {tag}')
     image_name = owner + '/' + repository_name
     try:
@@ -101,7 +101,7 @@ def update_container(owner: str, repository_name: str, tag: str) -> bool:
     log.info(f'Container:\n{docker_client.containers.list(all=True)}\n')
 
     log.info('Runing new instance...')
-    new_instance = docker_client.containers.run(image=image_name + ':' + tag, name=repository_name, detach=True, ports = {'8080': 8080})
+    new_instance = docker_client.containers.run(image=image_name + ':' + tag, name=repository_name, detach=True, ports = ports)
 
     if new_instance is not None:
         log.info('New instance is up and running.')
