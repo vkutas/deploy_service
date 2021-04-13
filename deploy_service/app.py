@@ -15,15 +15,15 @@ import requests
 log = logging.getLogger(__name__)
 app = Flask(__name__)
 docker_client = docker.from_env()
-AUTH_TOKEN = os.getenv('CI_TOKEN', None)  # Берем наш токен из переменной окружения
-
+AUTH_TOKEN = os.getenv('CI_TOKEN', None) 
+containers_restart_policy={"Name": "unless-stopped", "MaximumRetryCount": 3}
 
 def init_logging():
     """
     Инициализация логгера
     :return:
     """
-    log_format = f"[%(asctime)s] [ CI/CD server ] [%(levelname)s]:%(name)s:%(message)s"
+    log_format = f"[%(asctime)s] [ CD server ] [%(levelname)s]:%(name)s:%(message)s"
     formatters = {'basic': {'format': log_format}}
     handlers = {'stdout': {'class': 'logging.StreamHandler',
                            'formatter': 'basic'}}
@@ -101,7 +101,7 @@ def update_container(owner: str, repository_name: str, tag: str, ports: dict = N
     log.info(f'Container:\n{docker_client.containers.list(all=True)}\n')
 
     log.info('Runing new instance...')
-    new_instance = docker_client.containers.run(image=image_name + ':' + tag, name=repository_name, detach=True, ports = ports)
+    new_instance = docker_client.containers.run(image=image_name + ':' + tag, name=repository_name, detach=True, ports = ports, restart_policy=containers_restart_policy)
 
     if new_instance is not None:
         log.info('New instance is up and running.')
