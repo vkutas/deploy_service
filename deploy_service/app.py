@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 app = Flask(__name__)
 docker_client = docker.from_env()
 AUTH_TOKEN = os.getenv('CI_TOKEN', None) 
-containers_restart_policy={"Name": "unless-stopped", "MaximumRetryCount": 3}
+containers_restart_policy={"Name": "on-failure", "MaximumRetryCount": 3}
 
 def init_logging():
     """
