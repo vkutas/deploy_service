@@ -10,7 +10,7 @@ from flask import Flask
 from flask import request, jsonify
 import docker
 import requests
-
+import request_shema
 
 log = logging.getLogger(__name__)
 app = Flask(__name__)
@@ -18,9 +18,11 @@ docker_client = docker.from_env()
 AUTH_TOKEN = os.getenv('CI_TOKEN', None) 
 containers_restart_policy={"Name": "on-failure", "MaximumRetryCount": 3}
 
+
+
+
 def init_logging():
     """
-    Инициализация логгера
     :return:
     """
     log_format = f"[%(asctime)s] [ CD server ] [%(levelname)s]:%(name)s:%(message)s"
@@ -47,6 +49,7 @@ def init_logging():
     logging.config.dictConfig(log_config)
     
 @app.route('/deploy', methods=['POST'])
+@expects_json(request_shema.webhook_schema)
 def webhook_handler():
     if check_token(request.headers.get('Authorization')):
         if validate_request_format(request):
