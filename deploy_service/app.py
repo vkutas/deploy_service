@@ -97,10 +97,8 @@ def update_container(owner: str, repository: str, tag: str, ports: dict) -> bool
     log.info(f'Container:\n{docker_client.containers.list(all=True)}\n')
 
     log.info('Runing new instance...')
-    ports = {
-         request.get('ports').get('app_port') : request.get('ports').get('host_port')
-    }
-    new_instance = docker_client.containers.run(image=image_name + ':' + tag, name=repository_name, detach=True, ports = ports, restart_policy=containers_restart_policy)
+
+    new_instance = docker_client.containers.run(image=image_name + ':' + tag, name=repository, detach=True, ports = ports, restart_policy=containers_restart_policy)
 
     if new_instance is not None:
         log.info('New instance is up and running.')

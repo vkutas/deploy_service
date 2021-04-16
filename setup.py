@@ -7,7 +7,7 @@ setup(
     description="Simple deploy application",
     author='vkutas',
     packages=['deploy_service'],
-    install_requires=['Flask', 'docker'],
+    install_requires=['Flask', 'docker', 'flask-expects-json'],
     include_package_data=True,
     keywords=[
         'cd', 'flask', 'docker'
