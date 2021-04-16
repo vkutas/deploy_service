@@ -11,14 +11,48 @@ from flask import request, jsonify
 from flask_expects_json import expects_json
 import docker
 import requests
-import request_shema
+#import request_shema
 
 log = logging.getLogger(__name__)
 app = Flask(__name__)
 docker_client = docker.from_env()
 AUTH_TOKEN = os.getenv('CI_TOKEN', None) 
 containers_restart_policy={"Name": "on-failure", "MaximumRetryCount": 3}
-
+webhook_schema = {
+  "type": "object",
+  "properties": {
+    "owner": {
+      "type": "string"
+    },
+    "repository": {
+      "type": "string"
+    },
+    "tag": {
+      "type": "string"
+    },
+    "ports": {
+      "type": "object",
+      "properties": {
+        "app_port": {
+          "type": "integer"
+        },
+        "host_port": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "app_port",
+        "host_port"
+      ]
+    }
+  },
+  "required": [
+    "owner",
+    "repository",
+    "tag",
+    "ports"
+  ]
+}
 
 def init_logging():
     """
@@ -48,7 +82,8 @@ def init_logging():
     logging.config.dictConfig(log_config)
     
 @app.route('/deploy', methods=['POST'])
-@expects_json(request_shema.webhook_schema)
+#@expects_json(request_shema.webhook_schema)
+@expects_json(webhook_schema)
 def webhook_handler():
     if check_token(request.headers.get('Authorization')):
         log.debug("Update image")
