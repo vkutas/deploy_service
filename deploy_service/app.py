@@ -9,9 +9,10 @@ import logging.handlers
 from flask import Flask
 from flask import request, jsonify
 from flask_expects_json import expects_json
+from deploy_service.request_validation import webhook_schema
 import docker
 import requests
-import request_shema
+import pkgutil
 
 log = logging.getLogger(__name__)
 app = Flask(__name__)
@@ -19,6 +20,8 @@ docker_client = docker.from_env()
 AUTH_TOKEN = os.getenv('CI_TOKEN', None) 
 containers_restart_policy={"Name": "on-failure", "MaximumRetryCount": 3}
 
+search_path = ['.'] # set to None to see all modules importable from sys.path
+all_modules = [x[1] for x in pkgutil.iter_modules(path=search_path)]
 
 def init_logging():
     """
@@ -48,7 +51,7 @@ def init_logging():
     logging.config.dictConfig(log_config)
     
 @app.route('/deploy', methods=['POST'])
-@expects_json(request_shema.webhook_schema)
+@expects_json(webhook_schema)
 def webhook_handler():
     if check_token(request.headers.get('Authorization')):
         log.debug("Update image")
@@ -58,7 +61,7 @@ def webhook_handler():
         else:
             return jsonify("{'status': fail}"), 520
     else:
-        return 'Authorization required', 401
+        return jsonify("{'status': 'failure', 'message': 'Authorization required'}"), 401
 
 def check_token(token: str) -> bool:
     if token == AUTH_TOKEN:
@@ -106,6 +109,10 @@ def update_container(owner: str, repository: str, tag: str, ports: dict) -> bool
     else: 
         log.error('Running a new instance failed')
         return False
+
+@app.errorhandler(400)
+def bad_request(error):
+     return jsonify("{'status': 'failure', 'message': 'Bad Request'}"), 400
 
 
 def main():

@@ -1,12 +1,11 @@
-from setuptools import find_packages
-from setuptools import setup
+import setuptools
 
-setup(
+setuptools.setup(
     name='deploy_service',
     version='0.0.1',
     description="Simple deploy application",
     author='vkutas',
-    packages=['deploy_service'],
+    packages=setuptools.find_packages(),
     install_requires=['Flask', 'docker', 'flask-expects-json'],
     include_package_data=True,
     keywords=[
