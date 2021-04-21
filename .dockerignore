@@ -1,0 +1,9 @@
+deploy_service.egg**
+buil
+dist
+*.log
+!app.log
+*.sh
+*.json
+README.md
+key

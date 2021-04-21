@@ -4,7 +4,7 @@ A simple flask application which can pull image from docker hub and run a contai
 
 ## Description
 
-Application is listening port 5074. For now there is only one entry point - `/deploy` which receive the json payload with the following schema:
+Application is listening port 5074, but you can change it in [Dockerfile](Dockerfile). For now there is only one entry point - `/deploy` which receive the json payload with the following schema:
 
 ```json
 
@@ -36,24 +36,28 @@ Application is listening port 5074. For now there is only one entry point - `/de
 
 ## How to use
 
-0. You need docker, python 3 and pip installed on your system.  
+**Note:** This build was tested on Ubuntu 20.04 only.
 
-1. Clone the repo and move to the repo directory:  
-    ```
-    git clone https://github.com/vkutas/deploy_service 
-    cd deploy_service 
-    ``` 
-2. Install application:
-    `python3 setup.py install`
+**Note:**  You need [docker](https://docs.docker.com/engine/install/) installed on your system.  
 
-3. Copy `deploy_service.service` to the `/etc/systemd/system`
-    `cp deploy_service.service /etc/systemd/system`
+1. Pull the image from docker hub: 
 
-4. Generate a token and paste it to the `deploy_service.service` file.
-    `openssl rand -hex 20`
+  or clone the repo and build image yourself: 
+```
+git clone https://github.com/vkutas/deploy_service
+cd deploy_service
+docker build -t deploy_service:0.0.1 .
+```
 
-5. Run the service:
-    `sudo systemctl start deploy_service`
+2. Generate authentication key and save it to the file:   
+```
+openssl rand -hex 20 > key
+```
+
+Run the container:  
+```
+docker run -d --name dep_test -p 5074:5074 -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd)/key:/app/key  deploy_service:0.0.1
+```
 
 To update running container or run new one you can send a request to `http://your_server_address:5074/deploy`.
 
