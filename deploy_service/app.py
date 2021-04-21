@@ -20,13 +20,8 @@ docker_client = docker.from_env()
 AUTH_TOKEN = os.getenv('CI_TOKEN', None) 
 containers_restart_policy={"Name": "on-failure", "MaximumRetryCount": 3}
 
-search_path = ['.'] # set to None to see all modules importable from sys.path
-all_modules = [x[1] for x in pkgutil.iter_modules(path=search_path)]
-
 def init_logging():
-    """
-    :return:
-    """
+
     log_format = f"[%(asctime)s] [ CD server ] [%(levelname)s]:%(name)s:%(message)s"
     formatters = {'basic': {'format': log_format}}
     handlers = {'stdout': {'class': 'logging.StreamHandler',
@@ -53,15 +48,72 @@ def init_logging():
 @app.route('/deploy', methods=['POST'])
 @expects_json(webhook_schema)
 def webhook_handler():
+    """Entry point to recieve and handle container update requests.
+
+    It expects POST request with JSON payload which corresponds to request_validation.webhook_schema
+
+
+    Headers:
+    Authorization: - authorization token
+
+    Request body:
+    JSON object containg the following properties:
+    
+    owner (string):
+        Docker ID.
+
+    repository (string):
+        Name of the app repository. In most cases it is the same as the application (service) name.
+    
+    tag (string):
+        Image tag to pull.
+    
+    ports (JSON object):
+       JSON object containg the following properties:
+
+       app_port (number):
+           Port inside the container.
+        
+       host_port (number):
+          Corresponding host port.
+    
+
+    Response body:
+    JSON object with 2 properties: 'status' and 'message'.
+
+    status: 
+     'success' if image was successfuly pulled and container was successfuly run. 'failure' in rest of the cases.
+    
+    message:
+    If status is 'failure'  message property contain a short description of error occurred. If status is 'success' message is empty
+
+
+    Example of request:
+    
+        {
+        "owner": "azvak",
+        "repository": "best_app_ever",
+        "tag": "1.0.1-release",
+        "ports": {
+            "app_port": 5823,
+            "host_port": 80
+            }
+        }
+
+    Example of response:
+
+    {'status' : success, 'message': ''}
+    
+    """
     if check_token(request.headers.get('Authorization')):
         log.debug("Update image")
         is_succes = update_container(**request.get_json())
         if is_succes:
-            return jsonify("{'status': success}"), 200
+            return make_response('success', 'success', 200)
         else:
-            return jsonify("{'status': fail}"), 520
+            return make_response('failure', 'failure', 520)
     else:
-        return jsonify("{'status': 'failure', 'message': 'Authorization required'}"), 401
+        return make_response('failure', 'Authorization Required', 401)
 
 def check_token(token: str) -> bool:
     if token == AUTH_TOKEN:
@@ -69,6 +121,20 @@ def check_token(token: str) -> bool:
     return False
 
 def update_container(owner: str, repository: str, tag: str, ports: dict) -> bool:
+    """Pull container from Docker Hub and run it.
+
+    Parameters:
+
+    owner (str): Docker Hub User ID.
+    repository (str): Name of the user's repository.
+    tag (str): Image tag.
+    ports (dict): Ports mapping between host and container in format {app_port: port_number, host_port: port_number}
+
+    Returns:
+
+    True (bool): If image successfuly pulled and container up and running.
+    False (bool): Otherwise.
+    """
     log.info(f'Starting application update...\nRepository: {owner}\\{repository}\nTag: {tag}')
     image_name = owner + '/' + repository
     ports = {request.get_json().get('ports').get('app_port') : request.get_json().get('ports').get('host_port')}
@@ -112,8 +178,14 @@ def update_container(owner: str, repository: str, tag: str, ports: dict) -> bool
 
 @app.errorhandler(400)
 def bad_request(error):
-     return jsonify("{'status': 'failure', 'message': 'Bad Request'}"), 400
+     return make_response('failure', 'Bad Request', 400)
 
+@app.errorhandler(404)
+def bad_request(error):
+     return make_response('failure', 'Not Found', 404)
+
+def make_response(status: str, message: str, response_code: int):
+    return jsonify({'status' : status, 'message': message}), response_code
 
 def main():
     init_logging()
@@ -121,7 +193,6 @@ def main():
         log.error('There is no auth token in env')
         sys.exit(1)
     app.run(host='0.0.0.0', port=5074)
-
 
 if __name__ == '__main__':
     main()
